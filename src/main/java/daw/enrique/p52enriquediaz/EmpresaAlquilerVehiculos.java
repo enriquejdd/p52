@@ -20,18 +20,12 @@ public class EmpresaAlquilerVehiculos {
     private String cif;
     private String nombre;
     private String paginaWeb;
-
     /* Atributos para controlar el total de clientes que tiene la empresa y array de almacenamiento para los objetos Cliente */
-    private int totalClientes;
     private ArrayList<Cliente> clientes;
-
     /* Atributos para controlar el total de vehiculos disponibles en 
  alquiler que tiene la empresa y array de almacenamiento para los objetos Vehiculo */
-    private int totalVehiculos;
     private ArrayList<Vehiculo> vehiculos;
-
     /* Atributos para controlar el histórico de alquileres: total de alquileres realizados y array de almacenamiento para los objetos VehiculoAlquilado */
-    private int totalAlquileres;
     private ArrayList<VehiculoAlquilado> alquileres;
 
     public String getCif() {
@@ -58,14 +52,6 @@ public class EmpresaAlquilerVehiculos {
         this.paginaWeb = paginaWeb;
     }
 
-    public int getTotalClientes() {
-        return totalClientes;
-    }
-
-    public void setTotalClientes(int totalClientes) {
-        this.totalClientes = totalClientes;
-    }
-
     public ArrayList<Cliente> getClientes() {
         return clientes;
     }
@@ -74,28 +60,12 @@ public class EmpresaAlquilerVehiculos {
         this.clientes = clientes;
     }
 
-    public int getTotalVehiculos() {
-        return totalVehiculos;
-    }
-
-    public void setTotalVehiculos(int totalVehiculos) {
-        this.totalVehiculos = totalVehiculos;
-    }
-
     public ArrayList<Vehiculo> getVehiculos() {
         return vehiculos;
     }
 
     public void setVehiculos(ArrayList<Vehiculo> vehiculos) {
         this.vehiculos = vehiculos;
-    }
-
-    public int getTotalAlquileres() {
-        return totalAlquileres;
-    }
-
-    public void setTotalAlquileres(int totalAlquileres) {
-        this.totalAlquileres = totalAlquileres;
     }
 
     public ArrayList<VehiculoAlquilado> getAlquileres() {
@@ -113,20 +83,19 @@ public class EmpresaAlquilerVehiculos {
         this.nombre = nombre;
         this.paginaWeb = paginaWeb;
 // Incialmente no hay clientes creados en la empresa
-        this.totalClientes = 0;
         this.clientes = new ArrayList<Cliente>(50); // apuntan a null
 // Incialmente no hay vehiculos creados en la empresa
-        this.totalVehiculos = 0;
         this.vehiculos = new ArrayList<Vehiculo>(50); // apuntan a null
 // Incialmente no hay histórico de alquileres en la empresa
-        this.totalAlquileres = 0;
         this.alquileres = new ArrayList<VehiculoAlquilado>(100); // apuntan a null
     }
 
     public void registrarCliente(Cliente nuevo) {
         clientes.add(nuevo);
-        this.totalClientes++;
+    }
 
+    public int clientesTotales() {
+        return clientes.size();
     }
 
     public void ordenarNIF() {
@@ -134,31 +103,30 @@ public class EmpresaAlquilerVehiculos {
         Collections.sort(clientes, criterio);
     }
 
-    public int buscarCliente(Cliente nif) {
-
-        //        for (int i = 0; i < this.totalClientes; i++) {
-//
-//            if (this.clientes[i].getNif().equals(nif)) {
-//                return this.clientes[i];
-//            }
-//        }
-//        return null;
+    public int buscarClienteSecuencial(String nif) {
         ordenarNIF();
-        Comparator<Cliente> criterio = (c1, c2) -> c1.getNif().compareTo(c2.getNif());
-
-        int posicion = Collections.binarySearch(clientes, nif, criterio);
-
-        return posicion;
+        int posicion = 0;
+        for (Cliente cliente : clientes) {
+            if (cliente.getNif().compareToIgnoreCase(nif) == 0) {
+                return posicion;
+            }
+            posicion++;
+        }
+        return -1;
 
     }
 
     public void imprimirClientes() {
+        System.out.println("NIF\tNombre\tApeliidos\n");
         clientes.forEach(System.out::println);
     }
 
     public void registrarVehiculo(Vehiculo nuevo) {
         vehiculos.add(nuevo);
-        this.totalVehiculos++;
+    }
+
+    public int vehiculosTotales() {
+        return vehiculos.size();
     }
 
     public void ordenarMatricula() {
@@ -166,21 +134,16 @@ public class EmpresaAlquilerVehiculos {
         Collections.sort(vehiculos, criterio);
     }
 
-    public int buscarVehiculo(Vehiculo matricula) {
-//for (int i = 0; i < this.totalVehiculos; i++) {
-//
-//            if (this.vehiculos[i].getMatricula().equals(matricula)) {
-//                return this.vehiculos[i];
-//            }
-//        }
-//
-//        return null;
+    public int buscarVehiculoSecuencial(String matricula) {
         ordenarMatricula();
-        Comparator<Vehiculo> criterio = (v1, v2) -> v1.getMatricula().compareTo(v2.getMatricula());
-
-        int posicion = Collections.binarySearch(vehiculos, matricula, criterio);
-
-        return posicion;
+        int posicion = 0;
+        for (Vehiculo vehiculo : vehiculos) {
+            if (vehiculo.getMatricula().compareToIgnoreCase(matricula) == 0) {
+                return posicion;
+            }
+            posicion++;
+        }
+        return -1;
 
     }
 
@@ -194,36 +157,70 @@ public class EmpresaAlquilerVehiculos {
     }
 
     public boolean alquilarVehiculo(String matricula, String nif, int dias) {
-        // busca el cliente a partir del nif 
-        Cliente cliente = getCliente(nif);
-        // busca el vehículo a partir de la matrícula
-        Vehiculo vehiculo = getVehiculo(matricula);
 
-        if (cliente != null && vehiculo != null) {
-            if (vehiculo.isDisponible()) {
-                vehiculo.setDisponible(false);
-                
-                alquileres.add(new VehiculoAlquilado(cliente, vehiculo, LocalDate.now(), dias));
-//                this.alquileres[this.totalAlquileres] = new VehiculoAlquilado(cliente, vehiculo, LocalDate.now(), dias);
-
-                this.totalAlquileres++;
-                return true; // El alquiler se realiza correctamente
-            }
+        if (buscarClienteSecuencial(nif) != 0 && buscarVehiculoSecuencial(matricula) != 0) {
+            alquileres.add(new VehiculoAlquilado(clientes.get(buscarClienteSecuencial(nif)), vehiculos.get(buscarVehiculoSecuencial(matricula)), LocalDate.now(), dias));
+            vehiculos.get(buscarVehiculoSecuencial(matricula)).setDisponible(false);
+            return true;
         }
-        return false; // No se puede alquilar el vehiculo por el cliente
+        return false;
     }
 
-    public void recibirVehiculo(String matricula) {
+    public int alquileresTotales() {
+        return alquileres.size();
+    }
 
-// busca el vehículo con la matrícula dada en el
-// array vehiculos y modifica su disponibilidad
-// para que se pueda alquilar de nuevo
-        ordenarMatricula();
-        Vehiculo vehiculo = buscarVehiculo(vehiculo.getMatricula());
+    // Con este método entiendo que es para que el cliente pueda comprobar si el coche que desea alquilar esta disponible para recibirlo o no.
+    public String recibirVehiculo(String matricula) {
+        String recibidoSiNo = "";
 
-        if (vehiculo != null) {
-            vehiculo.setDisponible(true);
+        Vehiculo vehiculo = vehiculos.get(buscarVehiculoSecuencial(matricula));
+        if (vehiculo != null && vehiculo.equals(true)) {
+            recibidoSiNo = "El vehículo puede ser sido recibido";
+            return recibidoSiNo;
+        } else {
+            recibidoSiNo = "El vehículo no puede ser recibido";
+            return recibidoSiNo;
         }
+    }
+
+    public void fechaFinAlquileres() {
+        LocalDate f = LocalDate.now();
+        for (VehiculoAlquilado vehiculo : alquileres) {
+            f = f.plusDays(vehiculo.getTotalDiasAlquiler());
+            System.out.println("Vehículo con matrícula: " + vehiculo.getVehiculo().getMatricula() + " dispone de hasta el " + f + " de alquiler.");
+            
+            f = LocalDate.now();
+        }
+    }
+    
+      public void ordenarDiasAlquiler() {
+        Comparator<VehiculoAlquilado> criterio = (va1, va2) -> va1.getTotalDiasAlquiler().compareTo(va2.getTotalDiasAlquiler());
+        Collections.sort(alquileres, criterio);
+    }
+
+    public int buscarFechasSecuenciales(int dias) {
+        ordenarDiasAlquiler();
+        int posicion = 0;
+        for (VehiculoAlquilado vehiculoAlquilado : alquileres) {
+            if (vehiculoAlquilado.getTotalDiasAlquiler().compareTo(dias) == 0) {
+                return posicion;
+            }
+            posicion++;
+        }
+        return -1;
+
+    }
+
+    public String fechaFinAlquilerVehiculo(String matricula, int dia) {
+        String finalquiler = "";
+        ordenarDiasAlquiler();
+
+        LocalDate f = LocalDate.now();
+        f = f.plusDays(alquileres.get(buscarFechasSecuenciales(dia)).getTotalDiasAlquiler());
+        finalquiler = "El vehículo de matrícula " + matricula + " dispone de hasta el " + f + " días de alquiler";
+
+        return finalquiler;
 
     }
 
@@ -237,7 +234,7 @@ public class EmpresaAlquilerVehiculos {
 
     @Override
     public String toString() {
-        return "EmpresaAlquilerVehiculos{" + "cif=" + cif + ", nombre=" + nombre + ", paginaWeb=" + paginaWeb + ", totalClientes=" + totalClientes + ", clientes=" + clientes + ", totalVehiculos=" + totalVehiculos + ", vehiculos=" + vehiculos + ", totalAlquileres=" + totalAlquileres + ", alquileres=" + alquileres + '}';
+        return "EmpresaAlquilerVehiculos{" + "cif=" + cif + ", nombre=" + nombre + ", paginaWeb=" + paginaWeb + ", totalClientes=" + clientes.size() + ", clientes=" + clientes + ", totalVehiculos=" + vehiculos.size() + ", vehiculos=" + vehiculos + ", totalAlquileres=" + alquileres.size() + ", alquileres=" + alquileres + '}';
     }
 
 }

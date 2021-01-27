@@ -17,12 +17,12 @@ public class VehiculoAlquilado {
     private Cliente cliente;
     private Vehiculo vehiculo;
     private LocalDate fechaAlquiler;
-    private int totalDiasAlquiler;
+    private Integer totalDiasAlquiler;
 
     public VehiculoAlquilado() {
     }
 
-    public VehiculoAlquilado(Cliente cliente, Vehiculo vehiculo, LocalDate fechaAlquiler, int totalDiasAlquiler) {
+    public VehiculoAlquilado(Cliente cliente, Vehiculo vehiculo, LocalDate fechaAlquiler, Integer totalDiasAlquiler) {
         this.cliente = cliente;
         this.vehiculo = vehiculo;
         this.fechaAlquiler = fechaAlquiler;
@@ -53,11 +53,11 @@ public class VehiculoAlquilado {
         this.fechaAlquiler = fechaAlquiler;
     }
 
-    public int getTotalDiasAlquiler() {
+    public Integer getTotalDiasAlquiler() {
         return totalDiasAlquiler;
     }
 
-    public void setTotalDiasAlquiler(int totalDiasAlquiler) {
+    public void setTotalDiasAlquiler(Integer totalDiasAlquiler) {
         this.totalDiasAlquiler = totalDiasAlquiler;
     }
 
