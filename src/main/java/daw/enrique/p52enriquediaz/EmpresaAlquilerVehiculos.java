@@ -202,8 +202,9 @@ public class EmpresaAlquilerVehiculos {
         if (cliente != null && vehiculo != null) {
             if (vehiculo.isDisponible()) {
                 vehiculo.setDisponible(false);
-
-                this.alquileres[this.totalAlquileres] = new VehiculoAlquilado(cliente, vehiculo, LocalDate.now(), dias);
+                
+                alquileres.add(new VehiculoAlquilado(cliente, vehiculo, LocalDate.now(), dias));
+//                this.alquileres[this.totalAlquileres] = new VehiculoAlquilado(cliente, vehiculo, LocalDate.now(), dias);
 
                 this.totalAlquileres++;
                 return true; // El alquiler se realiza correctamente
