@@ -83,11 +83,11 @@ public class EmpresaAlquilerVehiculos {
         this.nombre = nombre;
         this.paginaWeb = paginaWeb;
 // Incialmente no hay clientes creados en la empresa
-        this.clientes = new ArrayList<Cliente>(50); // apuntan a null
+        this.clientes = new ArrayList<Cliente>(); // apuntan a null
 // Incialmente no hay vehiculos creados en la empresa
-        this.vehiculos = new ArrayList<Vehiculo>(50); // apuntan a null
+        this.vehiculos = new ArrayList<Vehiculo>(); // apuntan a null
 // Incialmente no hay histórico de alquileres en la empresa
-        this.alquileres = new ArrayList<VehiculoAlquilado>(100); // apuntan a null
+        this.alquileres = new ArrayList<VehiculoAlquilado>(); // apuntan a null
     }
 
     public void registrarCliente(Cliente nuevo) {
@@ -156,12 +156,24 @@ public class EmpresaAlquilerVehiculos {
         }
     }
 
+    private Vehiculo cogerVehiculo(int posicion) {
+        if (posicion >= 0 && posicion < vehiculos.size()) {
+            return vehiculos.get(posicion);
+        } else {
+            return null;
+        }
+    }
+
     public boolean alquilarVehiculo(String matricula, String nif, int dias) {
 
-        if (buscarClienteSecuencial(nif) != 0 && buscarVehiculoSecuencial(matricula) != 0) {
-            alquileres.add(new VehiculoAlquilado(clientes.get(buscarClienteSecuencial(nif)), vehiculos.get(buscarVehiculoSecuencial(matricula)), LocalDate.now(), dias));
-            vehiculos.get(buscarVehiculoSecuencial(matricula)).setDisponible(false);
-            return true;
+        Vehiculo vehiculo = cogerVehiculo(buscarVehiculoSecuencial(matricula));
+
+        if (buscarClienteSecuencial(nif) != -1 && buscarVehiculoSecuencial(matricula) != -1) {
+            if (vehiculo.isDisponible()) {
+                alquileres.add(new VehiculoAlquilado(clientes.get(buscarClienteSecuencial(nif)), vehiculos.get(buscarVehiculoSecuencial(matricula)), LocalDate.now(), dias));
+                vehiculos.get(buscarVehiculoSecuencial(matricula)).setDisponible(false);
+                return true;
+            }
         }
         return false;
     }
@@ -171,16 +183,11 @@ public class EmpresaAlquilerVehiculos {
     }
 
     // Con este método entiendo que es para que el cliente pueda comprobar si el coche que desea alquilar esta disponible para recibirlo o no.
-    public String recibirVehiculo(String matricula) {
-        String recibidoSiNo = "";
+    public void recibirVehiculo(String matricula) {
 
         Vehiculo vehiculo = vehiculos.get(buscarVehiculoSecuencial(matricula));
-        if (vehiculo != null && vehiculo.equals(true)) {
-            recibidoSiNo = "El vehículo puede ser sido recibido";
-            return recibidoSiNo;
-        } else {
-            recibidoSiNo = "El vehículo no puede ser recibido";
-            return recibidoSiNo;
+        if (vehiculo != null) {
+            vehiculo.setDisponible(true);
         }
     }
 
@@ -189,12 +196,12 @@ public class EmpresaAlquilerVehiculos {
         for (VehiculoAlquilado vehiculo : alquileres) {
             f = f.plusDays(vehiculo.getTotalDiasAlquiler());
             System.out.println("Vehículo con matrícula: " + vehiculo.getVehiculo().getMatricula() + " dispone de hasta el " + f + " de alquiler.");
-            
+
             f = LocalDate.now();
         }
     }
-    
-      public void ordenarDiasAlquiler() {
+
+    public void ordenarDiasAlquiler() {
         Comparator<VehiculoAlquilado> criterio = (va1, va2) -> va1.getTotalDiasAlquiler().compareTo(va2.getTotalDiasAlquiler());
         Collections.sort(alquileres, criterio);
     }
@@ -213,7 +220,7 @@ public class EmpresaAlquilerVehiculos {
     }
 
     public String fechaFinAlquilerVehiculo(String matricula, int dia) {
-        String finalquiler = "";
+        String finalquiler;
         ordenarDiasAlquiler();
 
         LocalDate f = LocalDate.now();

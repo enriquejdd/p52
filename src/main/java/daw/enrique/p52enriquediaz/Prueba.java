@@ -39,11 +39,11 @@ public class Prueba {
 
         // El cliente Juan alquilará por 3 días el fiat Ducato azul.
         easydrive.alquilarVehiculo("4100 FUR", "X5618927C", 3);
-        easydrive.alquilarVehiculo("4100 FUR", "Z7568991Y", 1); // Yá está alquilado por lo tanto no puede volverse ha alquilar
+        easydrive.alquilarVehiculo("4100 FUR", "Z7568991Y", 1); // Yá está alquilado por lo tanto no puede volverse ha alquilarse
         System.out.println("");
         System.out.println("Alquileres actuales");
         System.out.println(easydrive.alquileresTotales());
-        
+
         // Añadimos más vehiculos y más clientes
         Vehiculo v6 = new Vehiculo("4110 KYM", "Peugeot", "308", "Blanco", 120.0, true);
         Vehiculo v7 = new Vehiculo("4120 HYR", "Peugeot", "3008 Hybrid4", "Azul", 120.0, true);
@@ -51,34 +51,32 @@ public class Prueba {
         easydrive.registrarVehiculo(v6);
         easydrive.registrarVehiculo(v7);
         easydrive.registrarVehiculo(new Vehiculo("4400 EFG", "Ford", "Explorer", "Azul", 83.0, true));
-        
+
         easydrive.registrarCliente(new Cliente("15425992-E", "Nacho", "Muñoz Fuentes"));
         easydrive.registrarCliente(new Cliente("741369258-Q", "Sonia", "Gil Quiros"));
 
         // Comprobamos que se pueda alquilar el vehículo con matricula 4070 DEP
-        System.out.println(easydrive.recibirVehiculo("4070 DEP"));
-        
+        easydrive.recibirVehiculo("4070 DEP");
+
         // Alquilamos un par más de vehiculos.
-        easydrive.alquilarVehiculo("4070 DEP", "Z7568991Y", 2);        
+        easydrive.alquilarVehiculo("4070 DEP", "Z7568991Y", 2);
         easydrive.alquilarVehiculo("4400 EFG", "741369258-Q", 5);
         easydrive.alquilarVehiculo("4400 EFG", "15425992-E", 7); // Yá está alquilado por lo tanto no puede volverse ha alquilar
-        
-        
-        
+
         System.out.println("");
         System.out.println("Alquileres actuales");
         System.out.println(easydrive.alquileresTotales());
 
-        System.out.println(easydrive.recibirVehiculo("4070 DEP"));
-        
+        easydrive.recibirVehiculo("4070 DEP");
+
         // Comprobamos hasta que día están alquilados los vehículos
         System.out.println("");
         easydrive.fechaFinAlquileres();
-        
+
         // Comprobamos el alquiler concreto de un par de vehiculos
         System.out.println("");
         System.out.println(easydrive.fechaFinAlquilerVehiculo("4070 DEP", 2));
-        System.out.println(easydrive.fechaFinAlquilerVehiculo("4400 EFG",5));        
+        System.out.println(easydrive.fechaFinAlquilerVehiculo("4400 EFG", 5));
     }
 
 }
